@@ -20,7 +20,21 @@ Supported app adapters:
 - `waybar`
 - `dunst`
 
-## Install (Arch/Linux)
+## Install (easy)
+
+One command:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/MaxxWasHere/pywalnium/main/install.sh | bash
+```
+
+This installer:
+
+- uses `pipx` when available (recommended for global CLI apps)
+- falls back to `python3 -m pip install --user` if `pipx` is missing
+- prints next steps if your PATH needs `~/.local/bin`
+
+## Install (from cloned repo)
 
 ```bash
 cd /home/max/Documents/prj/pywalnium
