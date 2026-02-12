@@ -24,57 +24,77 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def _print_result(result: OperationResult) -> None:
+def _info(message: str) -> None:
+    print(f"INFO: {message}")
+
+
+def _warn(message: str) -> None:
+    print(f"WARN: {message}", file=sys.stderr)
+
+
+def _error(message: str) -> None:
+    print(f"ERROR: {message}", file=sys.stderr)
+
+
+def _print_result(result: OperationResult, verbose: bool = False) -> None:
     status = "changed" if result.changed else "unchanged"
-    print(f"{result.app}: {status} - {result.message} ({result.target})")
+    if verbose:
+        print(f"RESULT: app={result.app} status={status} target={result.target} message={result.message}")
+    else:
+        print(f"RESULT: {result.app} {status} - {result.message}")
 
 
 def _list_apps() -> int:
     registry = get_registry()
     detected = {app.name for app in detected_apps()}
+    _info(f"Supported apps: {len(registry)}; detected: {len(detected)}")
     for app in registry.values():
         state = "detected" if app.name in detected else "not detected"
-        print(f"{app.name:10} {state:13} {app.description}")
+        print(f"- {app.name:10} {state:13} {app.description}")
     return 0
 
 
 def _generate_single(app_name: str, wallpaper: str | None, dry_run: bool, verbose: bool) -> int:
     app = get_adapter(app_name)
     if app is None:
-        print(f"Unknown app '{app_name}'. Use --list-apps to see supported names.", file=sys.stderr)
+        _error(f"Unknown app '{app_name}'. Use --list-apps to see supported names.")
         return 2
     if not app.is_installed():
-        print(
+        _error(
             f"App '{app.name}' was not detected (binary/config missing). "
             "Install or create config first, or use --gen-all for auto-detected apps.",
-            file=sys.stderr,
         )
         return 2
 
+    _info(f"Generating app: {app.name}")
     palette = resolve_palette(wallpaper=wallpaper, verbose=verbose)
     result = generate_for_app(app, palette, dry_run=dry_run)
-    _print_result(result)
+    _print_result(result, verbose=verbose)
     return 0
 
 
 def _generate_all(wallpaper: str | None, dry_run: bool, verbose: bool) -> int:
     apps = detected_apps()
     if not apps:
-        print("No supported apps were detected. Use --list-apps.", file=sys.stderr)
+        _warn("No supported apps were detected. Use --list-apps.")
         return 2
 
+    _info(f"Generating for detected apps: {len(apps)}")
     palette = resolve_palette(wallpaper=wallpaper, verbose=verbose)
-    for app in apps:
+    for idx, app in enumerate(apps, start=1):
+        if verbose:
+            print(f"INFO: [{idx}/{len(apps)}] {app.name}")
         result = generate_for_app(app, palette, dry_run=dry_run)
-        _print_result(result)
+        _print_result(result, verbose=verbose)
     return 0
 
 
 def _ungenerate_single(app_name: str, dry_run: bool) -> int:
     app = get_adapter(app_name)
     if app is None:
-        print(f"Unknown app '{app_name}'. Use --list-apps to see supported names.", file=sys.stderr)
+        _error(f"Unknown app '{app_name}'. Use --list-apps to see supported names.")
         return 2
+    _info(f"Removing generated theme for app: {app.name}")
     result = ungenerate_for_app(app, dry_run=dry_run)
     _print_result(result)
     return 0
@@ -99,7 +119,7 @@ def main(argv: list[str] | None = None) -> int:
         if args.ungen:
             return _ungenerate_single(args.ungen, args.dry_run)
     except RuntimeError as exc:
-        print(str(exc), file=sys.stderr)
+        _error(str(exc))
         return 1
 
     return 0

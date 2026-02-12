@@ -67,7 +67,7 @@ def generate_with_wal(wallpaper: str) -> None:
 def resolve_palette(wallpaper: str | None = None, verbose: bool = False) -> Palette:
     if wallpaper:
         if verbose:
-            print(f"[pywalnium] generating palette with wal from {wallpaper}")
+            print(f"INFO: Generating palette from wallpaper: {wallpaper}")
         generate_with_wal(wallpaper)
 
     try:
