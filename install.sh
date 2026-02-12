@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO_URL="git+https://github.com/MaxxWasHere/pywalnium.git"
+REPO_URL="git+https://github.com/MaxxWasHere/Pywalnium.git"
 APP_NAME="pywalnium"
 
 info() {
@@ -52,7 +52,7 @@ verify_install() {
   if need_cmd "$APP_NAME"; then
     info "Install success."
     "$APP_NAME" --help >/dev/null 2>&1 || true
-    info "Run: pywalnium --gen-all  (or --gen <app>)"
+    info "Run: pywalnium --gen <app>  OR  pywalnium --gen-all"
     return 0
   fi
 

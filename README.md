@@ -25,26 +25,21 @@ Supported app adapters:
 One command:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/MaxxWasHere/pywalnium/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/MaxxWasHere/Pywalnium/main/install.sh | bash
 ```
 
 This installer:
 
 - uses `pipx` when available (recommended for global CLI apps)
 - falls back to `python3 -m pip install --user` if `pipx` is missing
-- prints next steps if your PATH needs `~/.local/bin`
+- prints exact next steps if your PATH needs `~/.local/bin`
 
-## Install (from cloned repo)
-
-```bash
-cd /home/max/Documents/prj/pywalnium
-pipx install .
-```
-
-Alternative user install:
+Manual alternatives:
 
 ```bash
-pip install --user .
+pipx install git+https://github.com/MaxxWasHere/Pywalnium.git
+# or
+python3 -m pip install --user --upgrade git+https://github.com/MaxxWasHere/Pywalnium.git
 ```
 
 ## Usage
